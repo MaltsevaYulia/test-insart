@@ -1,9 +1,16 @@
 import { checkAPIAvailability } from "./checkAPIAvailability";
 
 const rates = require('../db.json');
-
 export const fetcher = (url: string, init?: RequestInit) =>
-    fetch(url, init).then((res) => res.json());
+  fetch(url, init)
+    .then((res) => res.json())
+    .catch((error) => {
+      console.log(error);
+      return rates;
+    });
+
+// export const fetcher = (url: string, init?: RequestInit) =>
+//     fetch(url, init).then((res) => res.json());
   
 // export    const getRate = (url: string, init?: RequestInit
 //         ) => {

@@ -1,62 +1,129 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+import Form from "react-bootstrap/Form";
+import Col from "react-bootstrap/Col";
+import Row from "react-bootstrap/Row";
+import { IoSwapHorizontalOutline } from "react-icons/io5";
+import { useRates } from "../../store";
+import { IRate } from "../BuySellTable/BuySellTable";
 
 const CurrencyConvertor = () => {
+  const { rates } = useRates();
+  const [from, setFrom] = useState<string>("UAN");
+  const [into, setInto] = useState<string>("CHF");
+  const [amount, setAmount] = useState<number>(1);
+  const [currencyRate, setCurrencyRate] = useState<number>();
+
+  const [currencyResult, setCurrencyResult] = useState<number>();
+
+  useEffect(() => {
+   
+      if (from === "UAN" && into !== "UAN") {
+        const rate = rates?.find((item: IRate) => item.ccy === into).sale;
+        setCurrencyRate(1/parseFloat(rate));
+    
+      } else if (from !== "UAN" && into === "UAN") {
+        const rate = rates.find((item: IRate) => item.ccy === from).sale;
+        setCurrencyRate(parseFloat(rate));
+    
+      } else if (from !== "UAN" && into !== "UAN") {
+        const ratefrom = rates.find((item: IRate) => item.ccy === from).sale;
+        const rateinto = rates.find((item: IRate) => item.ccy === into).sale;
+        setCurrencyRate(parseFloat(ratefrom) / parseFloat(rateinto));
+        
+      } else if (from === "UAN" && into === "UAN") {
+        setCurrencyRate(1);
+      }
+      
+  }, [amount, currencyRate, from, into, rates]);
+
+  useEffect(() => {
+     if (currencyRate) setCurrencyResult(amount * currencyRate);
+  }, [amount, currencyRate]);
+
+
+
+  const handleInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { value } = e.target;
+    setAmount(parseFloat(value));
+  };
+
+  const handleFrom = (selectedOption: any) => {
+    setFrom(selectedOption.target.value);
+  };
+
+  const handleInto = (selectedOption: any) => {
+    setInto(selectedOption.target.value);
+  };
+
+  const handleSwitch = () => {
+    setFrom(into);
+    setInto(from);
+  };
+
   return (
-    <div>
-      <form>
-        <label>
-          <p>Change</p>
-          <input />
-          <select></select>
-        </label>
-        <label>
-          <p>Get</p>
-          <input />
-        </label>
-      </form>
-    </div>
+    <Form>
+      <Row>
+        <Col>
+          <Row className="mb-3">
+            <Col>
+              <Form.Group className="mb-3" controlId="formBasicPassword">
+                {/* <Form.Label>Change</Form.Label> */}
+                <Form.Control
+                  type="number"
+                  placeholder="Enter Amount"
+                  value={amount}
+                  onChange={handleInput}
+                />
+              </Form.Group>
+            </Col>
+            <Col>
+              <Form.Select
+                aria-label="Default select example"
+                onChange={handleFrom}
+                value={from}
+              >
+                <option>UAN</option>
+                {rates?.map(({ ccy }: { ccy: string }) => (
+                  <option key={ccy} value={ccy}>
+                    {ccy}
+                  </option>
+                ))}
+              </Form.Select>
+            </Col>
+          </Row>
+        </Col>
+        <Col>
+          <IoSwapHorizontalOutline onClick={handleSwitch} />
+        </Col>
+        <Col>
+          <Row className="mb-3">
+            <Col>
+              <Form.Group className="mb-3" controlId="formBasicPassword">
+                {/* <Form.Label>Get</Form.Label> */}
+                <Form.Control type="number" value={currencyResult} />
+              </Form.Group>
+            </Col>
+            <Col>
+              <Form.Select
+                aria-label="Default select example"
+                onChange={handleInto}
+                value={into}
+              >
+                {rates?.map(({ ccy }: { ccy: string }) => (
+                  <option key={ccy} value={ccy}>
+                    {ccy}
+                  </option>
+                ))}
+                <option>UAN</option>
+              </Form.Select>
+            </Col>
+          </Row>
+        </Col>
+      </Row>
+    </Form>
   );
 };
 
 export default CurrencyConvertor;
 
-{
-  /* <div
-  class="currency-option flex items-center py-2 px-4 cursor-pointer"
->
-  <img
-    src="https://hatscripts.github.io/circle-flags/flags/{{
-      codes[currency]
-    }}.svg"
-    width="48"
-    alt="{{ currency }} flag"
-    class="h-4 w-4 mr-2 inline-block"
-  />
-  <span class="currency-name">{ currency }</span>
-</div> */
-}
 
-{
-  /* <div class="relative relative bg-gray-200 border border-gray-200 text-gray-700 py-3 px-4 pr-4 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500">
-  <div class="flex items-center" (click)="toggleDropdown()">
-    <img
-                src="https://hatscripts.github.io/circle-flags/flags/{{
-                  codes[selectedCurrency]
-                }}.svg"
-                width="48"
-                alt="{{ selectedCurrency }} flag"
-                class="h-4 w-4 mr-2 inline-block"
-              />
-    <span>{{ selectedCurrency }}</span>
-    <svg class="fill-current h-4 w-4 ml-2 -mt-1 ml-auto" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-      <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" />
-    </svg>
-  </div>
-
-  <div class="dropdown-menu absolute hidden right-0 mt-2 py-2 w-full bg-white rounded shadow-lg" [class.hidden]="!isOpen" *ngIf="isOpen">
-
-      <app-currency-option [currency]="currency.key" [selectedCurrency]="selectedCurrency" (currencySelected)="selectCurrency($event)"></app-currency-option>
-
-  </div>
-</div> */
-}
