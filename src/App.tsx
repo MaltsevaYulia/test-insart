@@ -1,18 +1,20 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
-import Footer from './components/Footer/Footer';
-import Header from './components/Header/Header';
-import BuySellTable from './components/BuySellTable/BuySellTable';
+import React from "react";
+import logo from "./logo.svg";
+import "./App.css";
+import Footer from "./components/Footer/Footer";
+import Header from "./components/Header/Header";
+import BuySellTable from "./components/BuySellTable/BuySellTable";
 import "bootstrap/dist/css/bootstrap.min.css";
-import CurrencyConvertor from './components/CurrencyConvertor/CurrencyConvertor';
+import CurrencyConvertor from "./components/CurrencyConvertor/CurrencyConvertor";
 
 function App() {
   return (
-    <div className="App">
+    <div className="App ">
       <Header />
-      <BuySellTable />
-      <CurrencyConvertor/>
+      <main>
+        <BuySellTable />
+        <CurrencyConvertor />
+      </main>
       {/* <header className="App-header">
         <img src={logo} className="App-logo" alt="logo" />
         <p>
